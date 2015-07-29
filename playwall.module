@@ -1,0 +1,29 @@
+<?php
+
+function playwall_menu() {
+  $items['hackday'] = array(
+    'title' => 'Trending Stories',
+    'page callback' => '_hackday_trending',
+    'access callback' => TRUE,
+  );
+
+  return $items;
+}
+
+function _playwall_trending() {
+  $trending_url = "http://api.onebot.timeinc.com/feeds/timeinc/all.json";
+  $json = file_get_contents($trending_url);
+  $data = json_decode($json);
+  $vars['trending'] = $data;
+  $html = theme('hackday', $vars);
+  return $html;
+}
+
+function playwall_theme() {
+  return array(
+    'hackday' => array(
+      'variables' => array('items' => NULL),
+      'template' => 'hackday',
+    ),
+  );
+}
