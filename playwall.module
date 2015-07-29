@@ -43,14 +43,35 @@ function playwall_theme() {
     ),
   );
 }
-
 function beauty_theme_preprocess_playwall(&$variables) {
   foreach ($variables['trending']->trending as &$value) {
     $value->image->thumbnail = theme('imagecache_external', array('path' => $value->image->thumbnail, 'style_name'=> 'large'));
-    //$value->read_more = l("Read More", 'hackday/nojs/', array('attributes' => array('class' => array('use-ajax'), 'data' => urlencode($value->url))));
     $value->read_more = l("Read More", 'javascript:void(0);', array('external'=>true, 'attributes' => array("class" => array('dialogify'))));
-    $value->puzzle_image = "http://www.dunckelvet.com/clients/2144/images/Cat_pictures2.jpg";
+    $tags=$value->tags;
+    if ( isset($tags[1]->tag)) {
+      $image_url=_search_web_image($tags[1]->tag);
+      $value->puzzle_image = $image_url;
+    }
+    else {
+      $value->puzzle_image = 'http://img2-2.timeinc.net/people/i/2014/news/140908/full-house-1024.jpg';
+    }
   }
+}
+
+function _search_web_image($img) {
+
+  $url = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=".urlencode($img);
+  //sendRequest
+  //note how referer is set manually
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  //curl_setopt($ch, CURLOPT_REFERER, 'people.com');
+  $body = curl_exec($ch);
+  curl_close($ch);
+  //now, process the JSON string. and return image.
+  $json = json_decode($body);
+  return $json->responseData->results[0]->url;
 }
 
 function _hackday_trending_getmore1() {
