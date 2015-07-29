@@ -113,8 +113,8 @@
     </article>
     <script type="text/javascript">
     var act = new gigya.socialize.UserAction();
-    act.setTitle("Testing");
-    act.setLinkBack("/hackday");
+    act.setTitle("Share");
+    act.setLinkBack("gigya.com");
     act.setDescription("This is my Description");
     //act.addMediaItem({ type: 'image', src: '<?php echo $article->image->thumbnail;?>', href: '<?php echo $article->image->thumbnail;?>' });
     var showShareBarUI_params=
