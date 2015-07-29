@@ -12,7 +12,49 @@ function playwall_menu() {
     'page callback' => '_hackday_trending_getmore',
     'access callback' => TRUE,
   );
+  $items['hackday/addpoints'] = array(
+    'title' => 'Add Points',
+    'page callback' => 'hackday_add_user_points',
+    'access callback' => TRUE,
+  );
+  $items['hackday/showpoints'] = array(
+    'title' => 'Add Points',
+    'page callback' => 'hackday_show_user_points',
+    'access callback' => TRUE,
+  );
   return $items;
+}
+
+function hackday_show_user_points() {
+$query = db_query('SELECT * FROM {points} p WHERE p.email = :email', array(':email' => $_POST['email']));
+$result = $query->fetchAll();
+if(!empty($result)) {
+  echo $result[0]->points;
+  exit;
+  }
+}
+function hackday_add_user_points() {
+  //print_r($_POST);
+$query = db_query('SELECT * FROM {points} p WHERE p.email = :email', array(':email' => $_POST['email']));
+$result = $query->fetchAll();
+if(!empty($result)) {
+$num_updated = db_update('points') // Table name no longer needs {}
+  ->fields(array(
+    'points' => $result[0]->points + 1,
+  ))
+  ->condition('email', $result[0]->email, '=')
+  ->execute();
+}
+else {
+  $id = db_insert('points') // Table name no longer needs {}
+  ->fields(array(
+    'email' => $_POST['email'],
+    'fname' => $_POST['firstName'],
+    'points' => $_POST['points'],
+  ))
+  ->execute();
+}
+  exit;
 }
 
 function _playwall_trending() {
