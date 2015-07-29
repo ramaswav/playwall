@@ -1,3 +1,5 @@
 name = Playwall
 description = Playwall is a variant of softpaywall, where the user has to complete an interactive game to access full content.
 core = 7.x
+
+dependencies[] = imagecache_external

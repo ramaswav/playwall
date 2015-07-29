@@ -7,10 +7,25 @@ function playwall_menu() {
     'access callback' => TRUE,
   );
 
+  $items['hackday/ajax'] = array(
+    'title' => 'Trending Stories',
+    'page callback' => '_hackday_trending_getmore',
+    'access callback' => TRUE,
+  );
   return $items;
 }
 
 function _playwall_trending() {
+  drupal_add_js(drupal_get_path('module', 'playwall') . '/js/jquery.snap-puzzle.js', array('scope'=>'footer'));
+  drupal_add_js("//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", "external");
+  drupal_add_js("//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js", "external");
+  drupal_add_js("//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js", "external");
+
+  drupal_add_css("//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/ui-darkness/jquery-ui.min.css", "external");
+  drupal_add_css("//fonts.googleapis.com/css?family=Source+Sans+Pro:300", "external");
+  drupal_add_css("//yui.yahooapis.com/pure/0.5.0/pure-min.css", "external");
+  drupal_add_css("//yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css", "external");
+
   $trending_url = "http://api.onebot.timeinc.com/feeds/timeinc/all.json";
   $json = file_get_contents($trending_url);
   $data = json_decode($json);
@@ -26,4 +41,104 @@ function playwall_theme() {
       'template' => 'playwall',
     ),
   );
+}
+
+function beauty_theme_preprocess_playwall(&$variables) {
+  foreach ($variables['trending']->trending as &$value) {
+    $value->image->thumbnail = theme('imagecache_external', array('path' => $value->image->thumbnail, 'style_name'=> 'large'));
+    //$value->read_more = l("Read More", 'hackday/nojs/', array('attributes' => array('class' => array('use-ajax'), 'data' => urlencode($value->url))));
+    $value->read_more = l("Read More", 'javascript:void(0);', array('external'=>true, 'attributes' => array('class' => array('dialogify'), 'data-image-url' => 'http://www.dunckelvet.com/clients/2144/images/Cat_pictures2.jpg')));
+  }
+}
+
+function _hackday_trending_getmore1() {
+  include_once 'include/simple_html_dom.php';
+  $readability_token = "&token=30d037eff9e89aa37afd552ec2b486e371a0a21b";
+  $readability_url = "https://www.readability.com/api/content/v1/parser";
+  $page = "http://www.people.com/article/WWII-marines-remains-return-united-states";
+echo "<pre>";
+  $url = $readability_url . "?url=" . $page . $readability_token;
+
+  //$result = drupal_http_request($url);
+
+  //$data = json_decode($result->data, TRUE);
+  //print_r($data['content']);
+  $data['content'] = '<div>
+			<div id="mainPhoto" class="img1024">
+							<div class="image"><img src="http://img2-2.timeinc.net/people/i/2015/news/150811/marines-1024.jpg" width="1024" alt="Remains of Marines Killed in WWII Have Returned Home After More Than 70 Years"></div>
+							<p class="caption">The remains of 36 U.S. Marines killed in a World War II battle have been brought to the U.S. </p>
+							<p class="credit">Marco Garcia/AP</p>
+			            	</div>
+		 <div id="article_details"> <p class="byline">By <span class="author">Char Adams</span></p> <a class="twitter_handle" title="Follow  @CiCiAdams_ on Twitter" href="https://twitter.com/intent/user?screen_name=CiCiAdams_"> @CiCiAdams_</a>
+			<p class="published">
+				<abbr class="timestamp" title="2014-07-05T11:50:00Z">07/27/2015 AT 12:20 PM EDT</abbr>
+			</p>
+		 </div>  <div id="articleBody">More than 70 years ago, they died in one of the bloodiest battles of World War II. Now, they\'ve returned home.
+<p>The military and a private organization called History Flight have brought to the U.S. the remains of 36 Marines killed in the Battle of Tarawa in 1943, the <a href="http://hosted.ap.org/dynamic/stories/U/US_PACIFIC_BATTLE_REMAINS?SITE=AP&amp;SECTION=HOME&amp;TEMPLATE=DEFAULT&amp;CTIME=2015-07-27-01-49-53">Associated Press</a> reports.
+</p><p>The remains were unloaded on Sunday, and a ceremony to mark their return was held that day at Pearl Harbor.
+</p><p>A federal agency is working to identify the remains.  The AP reports that the remains of 1st Lt. Alexander J. Bonnyman, a Marine awarded the Medal of Honor, are said to be among the 36, according to preliminary work conducted by History Flight.
+</p><p>The Florida-based organization retrieved the remains from Tarawa, where more than 990 Marines and 30 sailors died during a three-day battle after their boats got stuck on a reef, according to the AP.
+</p><p>Thousands of Japanese troops died during the battle, and more than 1,000 Korean slave laborers on the island lost their lives as well.
+</p><p>The AP reports that about 520 U.S. servicemen remain unaccounted for.
+</p><p>Gen. Joseph Dunford, a Marine Corps commandant, told the AP that he is pleased by the discovery and noted that Tarawa is the site of one of the service\'s most significant battles.
+</p><p>"The lessons learned at Tarawa paved the way for our success in the Pacific campaign and eventual end to the war," he said.
+</p></div>
+
+
+
+
+
+
+			   </div>';
+  //$obj = str_get_html($data['content']);
+  //$output = $obj->find('div');
+  //print_r($output);
+
+  $doc = new DOMDocument();
+  $doc->loadHTML($data['content']);
+  $output = $doc->getElementById('articleBody');
+
+  print_r($output->nodeValue);
+}
+
+function _hackday_trending_getmore($type = 'ajax') {
+  if ($type == 'ajax') {
+    $data['content'] = '<div>
+			<div id="mainPhoto" class="img1024">
+							<div class="image"><img src="http://img2-2.timeinc.net/people/i/2015/news/150811/marines-1024.jpg" width="1024" alt="Remains of Marines Killed in WWII Have Returned Home After More Than 70 Years"></div>
+							<p class="caption">The remains of 36 U.S. Marines killed in a World War II battle have been brought to the U.S. </p>
+							<p class="credit">Marco Garcia/AP</p>
+			            	</div>
+		 <div id="article_details"> <p class="byline">By <span class="author">Char Adams</span></p> <a class="twitter_handle" title="Follow  @CiCiAdams_ on Twitter" href="https://twitter.com/intent/user?screen_name=CiCiAdams_"> @CiCiAdams_</a>
+			<p class="published">
+				<abbr class="timestamp" title="2014-07-05T11:50:00Z">07/27/2015 AT 12:20 PM EDT</abbr>
+			</p>
+		 </div>  <div id="articleBody">More than 70 years ago, they died in one of the bloodiest battles of World War II. Now, they\'ve returned home.
+<p>The military and a private organization called History Flight have brought to the U.S. the remains of 36 Marines killed in the Battle of Tarawa in 1943, the <a href="http://hosted.ap.org/dynamic/stories/U/US_PACIFIC_BATTLE_REMAINS?SITE=AP&amp;SECTION=HOME&amp;TEMPLATE=DEFAULT&amp;CTIME=2015-07-27-01-49-53">Associated Press</a> reports.
+</p><p>The remains were unloaded on Sunday, and a ceremony to mark their return was held that day at Pearl Harbor.
+</p><p>A federal agency is working to identify the remains.  The AP reports that the remains of 1st Lt. Alexander J. Bonnyman, a Marine awarded the Medal of Honor, are said to be among the 36, according to preliminary work conducted by History Flight.
+</p><p>The Florida-based organization retrieved the remains from Tarawa, where more than 990 Marines and 30 sailors died during a three-day battle after their boats got stuck on a reef, according to the AP.
+</p><p>Thousands of Japanese troops died during the battle, and more than 1,000 Korean slave laborers on the island lost their lives as well.
+</p><p>The AP reports that about 520 U.S. servicemen remain unaccounted for.
+</p><p>Gen. Joseph Dunford, a Marine Corps commandant, told the AP that he is pleased by the discovery and noted that Tarawa is the site of one of the service\'s most significant battles.
+</p><p>"The lessons learned at Tarawa paved the way for our success in the Pacific campaign and eventual end to the war," he said.
+</p></div>
+			   </div>';
+  //$obj = str_get_html($data['content']);
+  //$output = $obj->find('div');
+  //print_r($output);
+
+    $doc = new DOMDocument();
+    $doc->loadHTML($data['content']);
+    $output = $doc->getElementById('articleBody')->nodeValue;
+
+    $commands = array();
+    $commands[] = ajax_command_append('#myDiv', $output);
+    $page = array('#type' => 'ajax', '#commands' => $commands);
+    ajax_deliver($page);
+  }
+  else {
+    $output = t("This is some content delivered via a page load.");
+    return $output;
+  }
 }
