@@ -1,7 +1,57 @@
 <!-- <script type="text/javascript" src="http://localhost:8888/drupal-7.37/sites/all/modules/custom/playwall/js/jquery.snap-puzzle.js?ns8sm2"></script> -->
+<div id="runningCodeExample" style="border: 1px solid skyblue; padding: 15px; width: 300px; display: block; height: 200px;">
+    <div id="loginDiv"></div>
+    <script type="text/javascript">
+        gigya.socialize.showLoginUI({containerID: "loginDiv", cid:'', width:220, height:60,
+                //redirectURL: "/hackday",
+                showTermsLink:false, hideGigyaLink:true // remove 'Terms' and 'Gigya' links
+                });
+
+        var parse = function(data){
+            user = data.user;
+            if(user != "")  {
+            $.ajax({
+              url:'/hackday/showpoints',
+              type: 'post',
+              data: { "email": user.email},
+              success: function (response) {
+                  document.getElementById("points").style.display = "block";
+                  document.getElementById("points").innerHTML = response;
+              },
+              error: function () {
+                  //$('#output').html('Bummer: there was an error!');
+              }
+            });
+              document.getElementById('nickname').innerHTML = user.nickname;
+              document.getElementById('divUserPhoto').firstChild.src = user.thumbnailURL;
+              document.getElementById("loginDiv").style.display = "none";
+              document.getElementById("nickname").style.display = "block";
+              document.getElementById("divUserPhoto").style.display = "block";
+              document.getElementById("points-lable").style.display = "block";
+            };
+        }
+        gigya.socialize.addEventHandlers({
+          onLogin: onLoginHandler
+        });
+        var user = gigya.socialize.getUserInfo({callback: parse});
+        window.onload = function(){
+        }
+        function onLoginHandler(eventObj) {
+
+            // Show the User Status plugin on login
+            //gigya.gm.showUserStatusUI(userStatusParams);
+            location.reload();
+        }
+    </script>
+    <span id="nickname" style = "display:none;"></span>
+    <div id="divUserPhoto" style = "display:none;"><img src=""></div><br/>
+    <div id="points-lable" style = "display:none;">User Points:</div><br/>
+    <div id="points" style = "display:none;"></div></br>
+</div>
 <div id="dialog"></div>
 <div>
   <?php
+  $i = 0;
   foreach($trending->trending as $item => $article):
     ?>
     <article class="node clearfix node_item_<?php echo $item;?>" style="margin-top: 30px;">
@@ -61,7 +111,55 @@
       </footer>
 
     </article>
+    <script type="text/javascript">
+    var act = new gigya.socialize.UserAction();
+    act.setTitle("Testing");
+    act.setLinkBack("/hackday");
+    act.setDescription("This is my Description");
+    //act.addMediaItem({ type: 'image', src: '<?php echo $article->image->thumbnail;?>', href: '<?php echo $article->image->thumbnail;?>' });
+    var showShareBarUI_params=
+    {
+        containerID: 'componentDiv<?php echo $i;?>',
+        shareButtons: 'share',
+        userAction: act,
+        onSendDone: onSendDone,
+        onError: onError
+    }
+    </script>
+    <div id="componentDiv<?php echo $i;?>"></div>
+    <script type="text/javascript">
+       gigya.socialize.showShareBarUI(showShareBarUI_params);
+        function printResponse(response) {
+            if ( response.errorCode == 0 ) {
+                var user = response['user'];
+                var msg = 'User '+user['nickname'] + ' is ' +user['age'] + ' years old';
+                   $.ajax({
+                      url:'/hackday/addpoints',
+                      type: 'post',
+                      data: { "email": user['email'], "firstName": user['firstName'], "points": 1},
+                      success: function (response) {
+                          //$('#output').html(response.responseText);
+                      },
+                      error: function () {
+                          //$('#output').html('Bummer: there was an error!');
+                      }
+                  });
+            }
+            else {
+                alert('Error :' + response.errorMessage);
+            }
+        }
+       function onSendDone(event) {
+        gigya.socialize.getUserInfo({callback:printResponse});
+        location.reload();
+       }
+      // onError event handler
+      function onError(event) {
+        alert('An error has occured' + ': ' + event.errorCode + '; ' + event.errorMessage);
+      }
+    </script>
   <?php
+  $i = $i+1;
   endforeach;
   ?>
 </div>
