@@ -7,13 +7,11 @@
   <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/ui-darkness/jquery-ui.min.css" rel="stylesheet">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
-  <script src="http://localhost/d7/sites/default/files/jquery.snap-puzzle.js"></script>
-
   <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
   <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
   <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
   <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script><![endif]-->
-  <script src="js/jquery.snap-puzzle.js"></script>
+  <?php drupal_add_js(realpath(drupal_get_path('module', 'playwall')).'js/jquery.snap-puzzle.js'); ?>
 </head>
 <body>
 <div id="dialog"></div>

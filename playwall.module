@@ -3,7 +3,7 @@
 function playwall_menu() {
   $items['hackday'] = array(
     'title' => 'Trending Stories',
-    'page callback' => '_hackday_trending',
+    'page callback' => '_playwall_trending',
     'access callback' => TRUE,
   );
 
@@ -15,15 +15,15 @@ function _playwall_trending() {
   $json = file_get_contents($trending_url);
   $data = json_decode($json);
   $vars['trending'] = $data;
-  $html = theme('hackday', $vars);
+  $html = theme('playwall', $vars);
   return $html;
 }
 
 function playwall_theme() {
   return array(
-    'hackday' => array(
+    'playwall' => array(
       'variables' => array('items' => NULL),
-      'template' => 'hackday',
+      'template' => 'playwall',
     ),
   );
 }
