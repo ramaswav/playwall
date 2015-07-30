@@ -51,7 +51,7 @@
 <div id="dialog"></div>
 <div>
   <?php
-  $i = 0;
+  //$i = 0;
   foreach($trending->trending as $item => $article):
     ?>
     <article class="node clearfix node_item_<?php echo $item;?>" style="margin-top: 30px;">
@@ -114,19 +114,19 @@
     <script type="text/javascript">
     var act = new gigya.socialize.UserAction();
     act.setTitle("Share");
-    act.setLinkBack("gigya.com");
+    act.setLinkBack("<?php echo $article->brand;?>");
     act.setDescription("This is my Description");
     //act.addMediaItem({ type: 'image', src: '<?php echo $article->image->thumbnail;?>', href: '<?php echo $article->image->thumbnail;?>' });
     var showShareBarUI_params=
     {
-        containerID: 'componentDiv<?php echo $i;?>',
+        containerID: 'componentDiv<?php echo $item;?>',
         shareButtons: 'share',
         userAction: act,
         onSendDone: onSendDone,
         onError: onError
     }
     </script>
-    <div id="componentDiv<?php echo $i;?>"></div>
+    <div id="componentDiv<?php echo $item;?>"></div>
     <script type="text/javascript">
        gigya.socialize.showShareBarUI(showShareBarUI_params);
         function printResponse(response) {
@@ -159,7 +159,7 @@
       }
     </script>
   <?php
-  $i = $i+1;
+  //$i = $i+1;
   endforeach;
   ?>
 </div>
