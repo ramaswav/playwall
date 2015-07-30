@@ -11,7 +11,7 @@
             user = data.user;
             if(user != "")  {
             $.ajax({
-              url:'/hackday/showpoints',
+              url:'hackday/showpoints',
               type: 'post',
               data: { "email": user.email},
               success: function (response) {
@@ -134,7 +134,7 @@
                 var user = response['user'];
                 var msg = 'User '+user['nickname'] + ' is ' +user['age'] + ' years old';
                    $.ajax({
-                      url:'/hackday/addpoints',
+                      url:'hackday/addpoints',
                       type: 'post',
                       data: { "email": user['email'], "firstName": user['firstName'], "points": 1},
                       success: function (response) {
